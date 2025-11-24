@@ -4,13 +4,13 @@ const path = require('path');
 // Criar nova tarefa associada à empresa logada (usando o token JWT)
 exports.criar = async (req, res) => {
     try {
-        // Somente empresas podem criar tarefas
+
         if (req.user.tipo !== 'empresa') {
             return res.status(403).json({ message: 'Apenas empresas podem criar tarefas' });
         }
 
         const { descricao, link, desconto } = req.body;
-        const id_empresa = req.user.id; // ID extraído do token
+        const id_empresa = req.user.id;
 
         const tarefa = new Tarefa({ descricao, link, desconto, id_empresa });
         await tarefa.save();
@@ -118,12 +118,7 @@ exports.uploadPrint = async (req, res) => {
 
         tarefa.printUrl = `/uploads/prints/${req.file.filename}`;
 
-        // Se quiser, aqui poderia mudar o status da tarefa, ex:
-        // tarefa.status = 'comprovada';
-
         await tarefa.save();
-
-        // Retornar também o desconto para o frontend mostrar
         res.json({ 
             message: 'Print enviado com sucesso', 
             printUrl: tarefa.printUrl, 

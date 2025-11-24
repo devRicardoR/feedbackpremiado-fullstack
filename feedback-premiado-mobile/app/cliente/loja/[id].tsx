@@ -1,4 +1,3 @@
-// app/cliente/loja/[id].tsx
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import * as ImagePicker from "expo-image-picker";
@@ -11,7 +10,6 @@ export default function LojaDetalhes() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
 
-  // ✅ Garante que id seja sempre string
   const lojaId = Array.isArray(id) ? id[0] : id;
 
   const [loja, setLoja] = useState<any>(null);

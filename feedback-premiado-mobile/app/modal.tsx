@@ -3,14 +3,6 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 
-/**
- * Modal reutilizável.
- * Pode ser aberto com:
- * router.push({
- *   pathname: "/modal",
- *   params: { title: "Sucesso", message: "Login realizado com sucesso!" }
- * })
- */
 
 export default function ModalScreen() {
   const router = useRouter();

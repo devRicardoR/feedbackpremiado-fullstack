@@ -7,9 +7,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#3B82F6',    // Azul Tailwind padrão
-        secondary: '#10B981',  // Verde Tailwind
-        danger: '#EF4444',     // Vermelho Tailwind
+        primary: '#3B82F6', 
+        secondary: '#10B981',
+        danger: '#EF4444',     
         brandRed: '#E63946',
         brandOrange: '#F3722C',
         brandYellow: '#F9C74F',

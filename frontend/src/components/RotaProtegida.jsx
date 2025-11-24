@@ -4,13 +4,13 @@ import { setToken } from '../services/api';
 
 export default function RotaProtegida({ children, tipo }) {
     const token = localStorage.getItem('token');
-    const tipoUsuario = localStorage.getItem('tipo'); // cliente ou empresa
+    const tipoUsuario = localStorage.getItem('tipo');
 
     if (!token || tipoUsuario !== tipo) {
         return <Navigate to={`/${tipo}/login`} />;
     }
 
-    setToken(token); // seta token no axios para todas requisições
+    setToken(token);
 
     return children;
 }

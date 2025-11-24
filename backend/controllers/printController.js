@@ -1,6 +1,6 @@
 const Print = require('../models/Print');
 const Tarefa = require('../models/Tarefa');
-const Empresa = require('../models/Empresa'); // <-- IMPORT NECESSÁRIO
+const Empresa = require('../models/Empresa');
 
 /**
  * Envia o print do cliente com base na tarefa e empresa
@@ -28,7 +28,6 @@ exports.enviarPrint = async (req, res) => {
 
         await novoPrint.save();
 
-        // ✅ INCREMENTAR printsCount da empresa após o upload
         await Empresa.findByIdAndUpdate(id_empresa, { $inc: { printsCount: 1 } });
 
         res.json({
@@ -68,7 +67,7 @@ exports.excluirPrint = async (req, res) => {
             return res.status(404).json({ message: 'Print não encontrado' });
         }
 
-        // ✅ DECREMENTAR printsCount da empresa ao excluir o print
+
         await Empresa.findByIdAndUpdate(print.id_empresa, { $inc: { printsCount: -1 } });
 
         await print.deleteOne();
