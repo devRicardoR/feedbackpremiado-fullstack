@@ -1,4 +1,3 @@
-// app/empresa/fidelidade.tsx
 import React, { useEffect, useState } from 'react';
 import {
     View,
@@ -205,7 +204,7 @@ export default function EmpresaFidelidade() {
         );
     }
 
-    // ** Usando FlatList para todo conteúdo **
+    // Usando FlatList para todo conteúdo
     const ListHeader = () => (
         <View>
             <Text style={styles.title}>🎯 Programa de Fidelidade</Text>

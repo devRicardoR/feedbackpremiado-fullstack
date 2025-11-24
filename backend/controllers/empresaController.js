@@ -142,7 +142,7 @@ exports.rankingEmpresas = async (req, res) => {
       posicao: index + 1,
       nome: empresa.nome,
       cidade: empresa.endereco?.cidade || '',
-      totalPrints: empresa.printsCount || 0 // <- este nome precisa bater com o frontend
+      totalPrints: empresa.printsCount || 0 
     })));
   } catch (err) {
     console.error(err);

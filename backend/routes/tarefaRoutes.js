@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const tarefaController = require('../controllers/tarefaController');
 const authMiddleware = require('../middleware/authMiddleware');
-const upload = require('../middleware/upload'); // <-- usa o middleware corrigido
+const upload = require('../middleware/upload');
 
 // Rotas protegidas
 router.post('/', authMiddleware, tarefaController.criar);

@@ -6,7 +6,7 @@ module.exports = function (req, res, next) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // Ajuste aqui para manter um objeto req.user com id e tipo
+        
         req.user = {
             id: decoded.id,
             tipo: decoded.tipo,

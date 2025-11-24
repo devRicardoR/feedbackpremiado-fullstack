@@ -1,4 +1,3 @@
-// app/empresa/ranking.tsx
 import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, Dimensions, ActivityIndicator } from "react-native";
 import { BarChart } from "react-native-chart-kit";

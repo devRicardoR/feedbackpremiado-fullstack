@@ -22,7 +22,7 @@ export default function Fidelidade() {
         const carregarPrograma = async () => {
         setLoading(true);
         try {
-            const token = await setToken(); // pega o token do AsyncStorage via api.ts
+            const token = await setToken();
             const response = await api.get(`/fidelidade/progresso/${id}`);
             const data = response.data;
 

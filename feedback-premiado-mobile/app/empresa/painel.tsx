@@ -1,4 +1,3 @@
-// app/empresa/painel.tsx
 import React, { useEffect, useState, useRef } from 'react';
 import {
     View,

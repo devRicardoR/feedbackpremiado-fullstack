@@ -9,16 +9,16 @@ exports.cadastrar = async (req, res) => {
         return res.status(400).json({ message: 'Por favor, preencha todos os campos obrigatórios.' });
         }
 
-        // Verificar se cliente já existe
+        
         const clienteExistente = await Cliente.findOne({ email });
         if (clienteExistente) {
         return res.status(400).json({ message: 'Cliente já cadastrado com este email.' });
         }
 
-        // Gerar hash da senha
+
         const senhaHash = await bcrypt.hash(senha, 10);
 
-        // Criar cliente com senha hash
+
         const novoCliente = new Cliente({
         nome,
         email,
@@ -36,9 +36,9 @@ exports.cadastrar = async (req, res) => {
 
 exports.me = async (req, res) => {
     try {
-        const clienteId = req.user.id; // pega do middleware
+        const clienteId = req.user.id; 
 
-        const cliente = await Cliente.findById(clienteId).select('-senha'); // não retorna a senha
+        const cliente = await Cliente.findById(clienteId).select('-senha'); 
 
         if (!cliente) {
             return res.status(404).json({ message: 'Cliente não encontrado' });

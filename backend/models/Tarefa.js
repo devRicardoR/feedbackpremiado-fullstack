@@ -5,7 +5,7 @@ const TarefaSchema = new mongoose.Schema({
     descricao: { type: String, required: true },
     link: { type: String, required: true },
     desconto: { type: Number, required: true },
-    printUrl: { type: String, default: '' } // ✅ Campo necessário para o upload
+    printUrl: { type: String, default: '' }
 }, {
     timestamps: true
 });

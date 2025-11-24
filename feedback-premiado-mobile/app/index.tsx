@@ -1,13 +1,7 @@
-// app/index.tsx
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
-/**
- * Tela inicial do aplicativo.
- * - Apresenta opções para entrar como Cliente ou Empresa.
- * - Cada botão direciona para a tela correspondente de login.
- */
 
 export default function IndexScreen() {
     const router = useRouter();

@@ -113,7 +113,7 @@ module.exports = {
     async progressoCliente(req, res) {
         try {
             const id_cliente = req.user.id;
-            const { id } = req.params; // id da empresa
+            const { id } = req.params;
 
             if (!mongoose.Types.ObjectId.isValid(id)) {
                 return res.status(400).json({ message: 'ID da empresa inválido.' });
@@ -142,7 +142,7 @@ module.exports = {
     async participarPrograma(req, res) {
         try {
             const id_cliente = req.user.id;
-            const { id } = req.params; // ID da empresa
+            const { id } = req.params;
 
             if (!mongoose.Types.ObjectId.isValid(id)) {
                 return res.status(400).json({ message: 'ID da empresa inválido.' });
@@ -153,7 +153,7 @@ module.exports = {
                 return res.status(404).json({ message: 'Programa de fidelidade não encontrado.' });
             }
 
-            // Verifica se o cliente já está participando
+
             const jaParticipa = programa.clientes.some(
                 (c) => String(c.id_cliente) === String(id_cliente)
             );
@@ -162,7 +162,7 @@ module.exports = {
                 return res.status(400).json({ message: 'Você já está participando deste programa.' });
             }
 
-            // Adiciona o cliente ao programa
+
             programa.clientes.push({ id_cliente, carimbos: 0 });
             await programa.save();
 

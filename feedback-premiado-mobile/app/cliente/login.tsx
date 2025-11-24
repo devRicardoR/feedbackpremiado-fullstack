@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import api, { setToken } from '../services/api'; // ← importante
+import api, { setToken } from '../services/api';
 
 export default function ClienteLogin() {
     const router = useRouter();
@@ -21,7 +21,6 @@ export default function ClienteLogin() {
         setLoading(true);
 
         try {
-        // ✅ ROTA CORRETA (SEM /api)
         const response = await api.post('/login', {
             email,
             senha,
@@ -30,12 +29,10 @@ export default function ClienteLogin() {
 
         const { token } = response.data;
 
-        // ✅ Salva token para o interceptor
         await AsyncStorage.setItem('token', token);
         await AsyncStorage.setItem('tipo', 'cliente');
         await setToken(token);
 
-        // ✅ Vai para o painel do cliente
         router.replace('/cliente/painel');
 
         } catch (error: any) {
