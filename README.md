@@ -4,79 +4,94 @@ Projeto pessoal idealizado e desenvolvido por Ricardo Cesar Ramos.
 
 ## Visão Geral
 
-Este projeto é resultado de uma ideia original, desenvolvida como projeto próprio. Trata-se de uma solução inovadora, integrando funcionalidades de fidelização, tarefas, recompensas e feedbacks entre empresas e clientes, de forma prática e visualmente padronizada.
+Este projeto é resultado de uma ideia original, desenvolvida como projeto próprio. Trata-se de uma solução que integra funcionalidades de fidelização, tarefas, recompensas e feedbacks entre empresas e clientes, de forma prática e visualmente padronizada.
 
-Agora o projeto conta com três aplicações:
+Atualmente, o projeto conta com três aplicações:
 
-- Backend: API REST com Node.js/Express
-- Frontend Web: interface web em React.js
-- Frontend Mobile: app mobile em React Native (Expo Router)
+- Backend: API REST com Node.js e Express  
+- Frontend Web: interface web desenvolvida em React.js  
+- Frontend Mobile: aplicativo mobile desenvolvido em React Native utilizando Expo Router  
+
+---
 
 ## Tecnologias Utilizadas
 
-Backend:
-- Node.js / Express
-- MongoDB Atlas
-- Mongoose
-- JSON Web Token (jsonwebtoken)
-- Bcrypt.js
-- Multer (para upload de arquivos)
-- Cors
-- Dotenv
-- Nodemon (devDependency)
+### Backend
+- Node.js  
+- Express  
+- MongoDB Atlas  
+- Mongoose  
+- JSON Web Token (jsonwebtoken)  
+- Bcrypt.js  
+- Multer (upload de arquivos)  
+- Cors  
+- Dotenv  
+- Nodemon (dependência de desenvolvimento)  
 
-Frontend Web:
-- React.js
-- Tailwind CSS
+### Frontend Web
+- React.js  
+- Tailwind CSS  
 
-Frontend Mobile:
-- React Native
-- Expo Router
-- TypeScript
-- React Navigation
-- Axios
+### Frontend Mobile
+- React Native  
+- Expo Router  
+- TypeScript  
+- React Navigation  
+- Axios  
+
+---
 
 ## Funcionalidades
 
-- Cadastro e autenticação para empresas e clientes
-- Painel personalizado para cada perfil de usuário
-- Upload e gerenciamento de imagens e arquivos
-- Sistema de programas de fidelização com regras e benefícios configuráveis
-- Ranking e tarefas para engajamento dos clientes
-- Carimbos e prints quando tarefa realizada
+- Cadastro e autenticação de empresas e clientes  
+- Painel personalizado conforme o perfil do usuário  
+- Upload e gerenciamento de imagens e arquivos  
+- Sistema de fidelização com regras e benefícios configuráveis  
+- Sistema de tarefas e ranking para engajamento dos clientes  
+- Registro de carimbos e prints ao concluir tarefas  
+
+---
 
 ## Estrutura do Projeto
 
 app-feedback-premiado/
 ├─ backend/ # API REST
-├─ frontend/ # Web em React.js
-└─ feedback-premiado-mobile/ # App mobile React Native
+├─ frontend/ # Aplicação web em React.js
+└─ feedback-premiado-mobile/ # Aplicação mobile em React Native
+
+
+---
 
 ## Instruções de Uso
-1. Clone o repositório:  
-   ```bash
-   git clone https://github.com/devRicardoR/app-feedback-premiado.git
-   cd app-feedback-premiado
-Backend: 
+
+### 1. Clonar o repositório
+
+```bash
+git clone https://github.com/devRicardoR/app-feedback-premiado.git
+cd app-feedback-premiado
+2. Backend
 cd backend
 npm install
 npm run dev
-
-Frontend Mobile (React Native):
+3. Frontend Mobile (React Native)
 cd feedback-premiado-mobile
 npm install
 npx expo start
-
-Frontend Web:
+4. Frontend Web
 cd frontend
 npm install
 npm run dev
+5. Variáveis de Ambiente
+Configure as variáveis de ambiente necessárias, como:
 
-Configure as variáveis de ambiente necessárias (como MONGO_URI, API URL, etc.)
+MONGO_URI
 
-Observações:
-Projeto foi feito e entregue ao professor Douglas de React e React Native, da faculdade Estácio e esta em desenvolvimento contínuo sugestões e contribuições são bem-vindas
+JWT_SECRET
 
+API URL
 
+Observações
+Projeto desenvolvido e entregue ao professor Douglas, nas disciplinas de React e React Native da faculdade Estácio.
+O projeto encontra-se em desenvolvimento contínuo e sugestões ou contribuições são bem-vindas.
 
 Desenvolvido por Ricardo Cesar Ramos.
