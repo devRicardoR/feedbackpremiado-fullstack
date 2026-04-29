@@ -8,17 +8,17 @@ import {
     Tooltip,
     ResponsiveContainer,
     CartesianGrid,
-    } from "recharts";
+} from "recharts";
 
-    export default function EmpresaRanking() {
+export default function EmpresaRanking() {
     const [ranking, setRanking] = useState([]);
     const [erro, setErro] = useState("");
 
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) {
-        setErro("Usuário não autenticado");
-        return;
+            setErro("Usuário não autenticado");
+            return;
         }
         setToken(token);
         carregarRanking();
@@ -26,74 +26,96 @@ import {
 
     async function carregarRanking() {
         try {
-        const res = await api.get("/empresas/ranking");
-        setRanking(res.data);
+            const res = await api.get("/empresas/ranking");
+            setRanking(res.data);
         } catch (e) {
-        console.error(e);
-        setErro("Erro ao carregar ranking");
+            console.error(e);
+            setErro("Erro ao carregar ranking");
         }
     }
 
     const maiorPontuacao = Math.max(...ranking.map((e) => e.totalPrints), 1);
 
     return (
-        <main className="min-h-screen font-poppins bg-gradient-to-br from-brandRed via-brandOrange to-brandYellow text-white flex flex-col items-center justify-center p-6">
-        <div className="max-w-6xl w-full bg-white/20 backdrop-blur-md rounded-3xl p-8 border border-white/30 shadow-lg">
-            <h1 className="text-4xl font-extrabold mb-8 drop-shadow-md text-white text-center">
-            Ranking de Empresas Mais Avaliadas
-            </h1>
+        <div className="min-h-screen font-poppins bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white p-6">
+            <div className="max-w-4xl mx-auto">
 
-            {erro && (
-            <p className="mb-6 text-red-500 text-center font-semibold">{erro}</p>
-            )}
+                <div className="text-center mb-8">
+                    <h1 className="text-3xl font-extrabold text-white">Ranking de Empresas</h1>
+                    <p className="text-purple-300 text-sm mt-1">Empresas mais avaliadas pelos clientes</p>
+                </div>
 
-            {ranking.length === 0 ? (
-            <p className="text-center text-white/90 text-lg">
-                Nenhuma avaliação encontrada.
-            </p>
-            ) : (
-            <div className="w-full h-[500px]">
-                <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                    data={ranking}
-                    margin={{ top: 20, right: 30, left: 30, bottom: 80 }}
-                    barCategoryGap="20%"
-                >
-                    <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="rgba(255 255 255 / 0.2)"
-                    />
-                    <XAxis
-                    dataKey="nome"
-                    interval={0}
-                    angle={-25}
-                    textAnchor="end"
-                    height={100}
-                    tick={{ fill: "white", fontWeight: "600", fontSize: 12 }}
-                    />
-                    <YAxis
-                    tick={{ fill: "white", fontWeight: "600" }}
-                    domain={[0, Math.ceil(maiorPontuacao * 1.1)]}
-                    />
-                    <Tooltip
-                    contentStyle={{
-                        backgroundColor: "#1f2937",
-                        borderRadius: "8px",
-                        border: "none",
-                    }}
-                    itemStyle={{ color: "#F87171", fontWeight: "600" }}
-                    />
-                    <Bar
-                    dataKey="totalPrints"
-                    fill="#7B1A1A"
-                    radius={[10, 10, 0, 0]}
-                    maxBarSize={60}
-                    />
-                </BarChart>
-                </ResponsiveContainer>
+                {erro && (
+                    <div className="mb-6 bg-red-500/20 border border-red-400/40 rounded-xl px-4 py-3 text-red-300 text-sm text-center">
+                        {erro}
+                    </div>
+                )}
+
+                {ranking.length === 0 && !erro ? (
+                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-12 text-center">
+                        <p className="text-purple-300">Nenhuma avaliação encontrada.</p>
+                    </div>
+                ) : (
+                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-lg">
+                        <div className="w-full h-[420px]">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart
+                                    data={ranking}
+                                    margin={{ top: 20, right: 20, left: 10, bottom: 80 }}
+                                    barCategoryGap="20%"
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                                    <XAxis
+                                        dataKey="nome"
+                                        interval={0}
+                                        angle={-25}
+                                        textAnchor="end"
+                                        height={100}
+                                        tick={{ fill: "#c4b5fd", fontWeight: "600", fontSize: 12 }}
+                                    />
+                                    <YAxis
+                                        tick={{ fill: "#c4b5fd", fontWeight: "600", fontSize: 12 }}
+                                        domain={[0, Math.ceil(maiorPontuacao * 1.1)]}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: "#1e1b4b",
+                                            borderRadius: "12px",
+                                            border: "1px solid rgba(99,102,241,0.3)",
+                                        }}
+                                        itemStyle={{ color: "#a5b4fc", fontWeight: "600" }}
+                                        labelStyle={{ color: "white", fontWeight: "700" }}
+                                    />
+                                    <Bar
+                                        dataKey="totalPrints"
+                                        fill="#6366f1"
+                                        radius={[8, 8, 0, 0]}
+                                        maxBarSize={60}
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+
+                        {/* Lista de posições abaixo do gráfico */}
+                        <div className="mt-6 space-y-2">
+                            {ranking.map((empresa, index) => (
+                                <div key={empresa._id || index} className="flex items-center gap-3 bg-white/5 rounded-xl px-4 py-2">
+                                    <span className={`text-sm font-bold w-6 text-center ${
+                                        index === 0 ? 'text-yellow-400' :
+                                        index === 1 ? 'text-gray-300' :
+                                        index === 2 ? 'text-amber-600' :
+                                        'text-purple-400'
+                                    }`}>
+                                        {index + 1}
+                                    </span>
+                                    <span className="flex-1 text-white text-sm font-semibold">{empresa.nome}</span>
+                                    <span className="text-purple-300 text-sm">{empresa.totalPrints} avaliações</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
-            )}
         </div>
-        </main>
     );
 }

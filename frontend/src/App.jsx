@@ -25,7 +25,6 @@ import RotaProtegida from './components/RotaProtegida';
 // Logout
 import Logout from './components/Logout';
 
-// Ícones simples
 function IconHome() {
     return (
         <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -51,13 +50,14 @@ function IconLogout() {
     );
 }
 
-function LayoutWrapperEmpresa({ children }) {
+const ROTAS_SEM_LAYOUT = ['/', '/empresa/login', '/empresa/cadastro', '/cliente/login', '/cliente/cadastro', '/logout'];
+
+function Layout({ children }) {
     const location = useLocation();
     const navigate = useNavigate();
-
-    const rotasSemLayout = ['/', '/empresa/login', '/empresa/cadastro'];
-    const exibirLayout = !rotasSemLayout.includes(location.pathname);
     const tipo = localStorage.getItem('tipo');
+
+    const exibirLayout = !ROTAS_SEM_LAYOUT.includes(location.pathname);
 
     function handleLogout() {
         localStorage.removeItem('token');
@@ -67,10 +67,12 @@ function LayoutWrapperEmpresa({ children }) {
 
     function handleEditarPerfil() {
         if (tipo === 'empresa') navigate('/empresa/editar');
+        else if (tipo === 'cliente') navigate('/cliente/editar');
     }
 
     function handleHome() {
         if (tipo === 'empresa') navigate('/empresa/painel');
+        else if (tipo === 'cliente') navigate('/cliente/painel');
     }
 
     const headerFooterClass = 'bg-black bg-opacity-70 backdrop-blur-md text-white';
@@ -83,61 +85,9 @@ function LayoutWrapperEmpresa({ children }) {
                 </header>
             )}
 
-            <main className="flex-1 overflow-y-auto p-4 mb-20">{children}</main>
-
-            {exibirLayout && (
-                <footer className={`${headerFooterClass} border-t shadow-md fixed bottom-0 w-full flex justify-around py-2`}>
-                    <button onClick={handleHome} className="flex flex-col items-center">
-                        <IconHome />
-                        <span className="text-sm">Home</span>
-                    </button>
-                    <button onClick={handleEditarPerfil} className="flex flex-col items-center">
-                        <IconUser />
-                        <span className="text-sm">Editar Perfil</span>
-                    </button>
-                    <button onClick={handleLogout} className="flex flex-col items-center">
-                        <IconLogout />
-                        <span className="text-sm">Sair</span>
-                    </button>
-                </footer>
-            )}
-        </div>
-    );
-}
-
-function LayoutWrapperCliente({ children }) {
-    const location = useLocation();
-    const navigate = useNavigate();
-
-    const rotasSemLayout = ['/', '/cliente/login', '/cliente/cadastro'];
-    const exibirLayout = !rotasSemLayout.includes(location.pathname);
-    const tipo = localStorage.getItem('tipo');
-
-    function handleLogout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('tipo');
-        navigate('/');
-    }
-
-    function handleEditarPerfil() {
-        if (tipo === 'cliente') navigate('/cliente/editar');
-    }
-
-    function handleHome() {
-        if (tipo === 'cliente') navigate('/cliente/painel');
-    }
-
-    const headerFooterClass = 'bg-black bg-opacity-70 backdrop-blur-md text-white';
-
-    return (
-        <div className="flex flex-col h-screen bg-gray-100">
-            {exibirLayout && (
-                <header className={`${headerFooterClass} shadow p-4 text-center font-semibold text-lg`}>
-                    Feedback Premiado
-                </header>
-            )}
-
-            <main className="flex-1 overflow-y-auto p-4 mb-20">{children}</main>
+            <main className={`flex-1 overflow-y-auto p-4 ${exibirLayout ? 'mb-20' : ''}`}>
+                {children}
+            </main>
 
             {exibirLayout && (
                 <footer className={`${headerFooterClass} border-t shadow-md fixed bottom-0 w-full flex justify-around py-2`}>
@@ -160,84 +110,63 @@ function LayoutWrapperCliente({ children }) {
 }
 
 function App() {
-    const tipo = localStorage.getItem('tipo');
-
     return (
-        <>
-            {tipo === 'empresa' && (
-                <LayoutWrapperEmpresa>
-                    <Routes>
-                        <Route path="/" element={<EscolhaUsuario />} />
-                        <Route path="/empresa/cadastro" element={<EmpresaCadastro />} />
-                        <Route path="/empresa/login" element={<EmpresaLogin />} />
-                        <Route path="/empresa/:id/tarefas" element={<TarefasDaEmpresa />} />
-                        <Route path="/empresa/fidelidade" element={
-                            <RotaProtegida tipo="empresa">
-                                <ProgramaFidelizacaoPainel />
-                            </RotaProtegida>
-                        } />
-                        <Route path="/empresa/painel" element={
-                            <RotaProtegida tipo="empresa">
-                                <EmpresaPainel />
-                            </RotaProtegida>
-                        } />
-                        <Route path="/empresa/ranking" element={
-                            <RotaProtegida tipo="empresa">
-                                <EmpresaRanking />
-                            </RotaProtegida>
-                        } />
-                        <Route path="/empresa/editar" element={
-                            <RotaProtegida tipo="empresa">
-                                <EmpresaCadastro isEdit={true} />
-                            </RotaProtegida>
-                        } />
-                        <Route path="/logout" element={<Logout />} />
-                    </Routes>
-                </LayoutWrapperEmpresa>
-            )}
+        <Layout>
+            <Routes>
+                <Route path="/" element={<EscolhaUsuario />} />
 
-            {tipo === 'cliente' && (
-                <LayoutWrapperCliente>
-                    <Routes>
-                        <Route path="/" element={<EscolhaUsuario />} />
-                        <Route path="/cliente/cadastro" element={<ClienteCadastro />} />
-                        <Route path="/cliente/login" element={<ClienteLogin />} />
-                        <Route path="/cliente/painel" element={
-                            <RotaProtegida tipo="cliente">
-                                <ClientePainel />
-                            </RotaProtegida>
-                        } />
-                        <Route path="/cliente/loja/:id" element={
-                            <RotaProtegida tipo="cliente">
-                                <LojaDetalhes />
-                            </RotaProtegida>
-                        } />
-                        <Route path="/cliente/fidelidade/:id_empresa" element={
-                            <RotaProtegida tipo="cliente">
-                                <ProgramaFidelizacao />
-                            </RotaProtegida>
-                        } />
-                        <Route path="/cliente/editar" element={
-                            <RotaProtegida tipo="cliente">
-                                <ClienteCadastro isEdit={true} />
-                            </RotaProtegida>
-                        } />
-                        <Route path="/logout" element={<Logout />} />
-                    </Routes>
-                </LayoutWrapperCliente>
-            )}
+                <Route path="/cliente/cadastro" element={<ClienteCadastro />} />
+                <Route path="/cliente/login" element={<ClienteLogin />} />
 
-            {!tipo && (
-                <Routes>
-                    <Route path="/" element={<EscolhaUsuario />} />
-                    <Route path="/cliente/cadastro" element={<ClienteCadastro />} />
-                    <Route path="/cliente/login" element={<ClienteLogin />} />
-                    <Route path="/empresa/cadastro" element={<EmpresaCadastro />} />
-                    <Route path="/empresa/login" element={<EmpresaLogin />} />
-                    <Route path="/logout" element={<Logout />} />
-                </Routes>
-            )}
-        </>
+                <Route path="/empresa/cadastro" element={<EmpresaCadastro />} />
+                <Route path="/empresa/login" element={<EmpresaLogin />} />
+
+                <Route path="/cliente/painel" element={
+                    <RotaProtegida tipo="cliente">
+                        <ClientePainel />
+                    </RotaProtegida>
+                } />
+                <Route path="/cliente/loja/:id" element={
+                    <RotaProtegida tipo="cliente">
+                        <LojaDetalhes />
+                    </RotaProtegida>
+                } />
+                <Route path="/cliente/fidelidade/:id_empresa" element={
+                    <RotaProtegida tipo="cliente">
+                        <ProgramaFidelizacao />
+                    </RotaProtegida>
+                } />
+                <Route path="/cliente/editar" element={
+                    <RotaProtegida tipo="cliente">
+                        <ClienteCadastro isEdit={true} />
+                    </RotaProtegida>
+                } />
+
+                <Route path="/empresa/painel" element={
+                    <RotaProtegida tipo="empresa">
+                        <EmpresaPainel />
+                    </RotaProtegida>
+                } />
+                <Route path="/empresa/ranking" element={
+                    <RotaProtegida tipo="empresa">
+                        <EmpresaRanking />
+                    </RotaProtegida>
+                } />
+                <Route path="/empresa/fidelidade" element={
+                    <RotaProtegida tipo="empresa">
+                        <ProgramaFidelizacaoPainel />
+                    </RotaProtegida>
+                } />
+                <Route path="/empresa/editar" element={
+                    <RotaProtegida tipo="empresa">
+                        <EmpresaCadastro isEdit={true} />
+                    </RotaProtegida>
+                } />
+                <Route path="/empresa/:id/tarefas" element={<TarefasDaEmpresa />} />
+
+                <Route path="/logout" element={<Logout />} />
+            </Routes>
+        </Layout>
     );
 }
 

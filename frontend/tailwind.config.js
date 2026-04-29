@@ -7,14 +7,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#3B82F6', 
-        secondary: '#10B981',
-        danger: '#EF4444',     
-        brandRed: '#E63946',
-        brandOrange: '#F3722C',
-        brandYellow: '#F9C74F',
-        brandBlue: '#577590',
-        brandGreen: '#90BE6D',
+        primary: '#6366F1',      // Índigo vibrante — ações principais
+        secondary: '#8B5CF6',    // Roxo médio — destaques
+        accent: '#A78BFA',       // Roxo claro — hover, badges
+        danger: '#EF4444',       // Vermelho — erros, alertas
+        success: '#10B981',      // Verde — confirmações, descontos
+        surface: '#F5F3FF',      // Fundo levíssimo lilás
+        muted: '#6B7280',        // Cinza — textos secundários
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
