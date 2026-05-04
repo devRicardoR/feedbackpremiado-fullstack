@@ -5,6 +5,7 @@ import api, { setToken } from "../../services/api";
 export default function LojaDetalhes() {
     const { id } = useParams();
     const navigate = useNavigate();
+
     const [loja, setLoja] = useState(null);
     const [tarefas, setTarefas] = useState([]);
     const [printsEnviados, setPrintsEnviados] = useState({});
@@ -15,6 +16,7 @@ export default function LojaDetalhes() {
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) return;
+
         setToken(token);
         carregarLoja();
         carregarTarefas();
@@ -40,17 +42,21 @@ export default function LojaDetalhes() {
 
     async function enviarPrint(tarefaId, file) {
         if (!file) return;
+
         setUploadStatus("");
         setErro("");
+
         const formData = new FormData();
         formData.append("imagem", file);
         formData.append("id_tarefa", tarefaId);
         formData.append("id_empresa", id);
+
         try {
             const { data } = await api.post(`/prints/enviar`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
-            setUploadStatus(`🎉 Parabéns! Você ganhou ${data.desconto || ""}% de desconto pelo seu feedback!`);
+
+            setUploadStatus(`Você ganhou ${data.desconto || ""}% de desconto`);
             setPrintsEnviados((prev) => ({ ...prev, [tarefaId]: true }));
         } catch (error) {
             setErro(error.response?.data?.message || "Erro ao enviar comprovante");
@@ -58,97 +64,130 @@ export default function LojaDetalhes() {
     }
 
     const toggleTarefa = (tarefaId) =>
-        setTarefasAbertas((prev) => ({ ...prev, [tarefaId]: !prev[tarefaId] }));
+        setTarefasAbertas((prev) => ({
+            ...prev,
+            [tarefaId]: !prev[tarefaId],
+        }));
 
-    const irParaProgramaFidelidade = () => navigate(`/cliente/fidelidade/${id}`);
+    const irParaProgramaFidelidade = () =>
+        navigate(`/cliente/fidelidade/${id}`);
 
     if (!loja) return <p className="p-6 text-white">Carregando...</p>;
 
+    const cardClass =
+        "bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6";
+
+    const buttonPrimary =
+        "w-full bg-clientPrimary hover:bg-clientSecondary py-3 rounded-xl font-semibold transition";
+
+    const buttonSecondary =
+        "px-4 py-2 bg-black/40 border border-white/10 rounded-xl text-sm hover:border-clientPrimary transition";
+
     return (
-        <div className="min-h-screen font-poppins bg-gradient-to-br from-brandRed via-brandOrange to-brandYellow text-white p-6">
-            <div className="bg-white/20 backdrop-blur-md p-6 rounded-3xl shadow-lg mb-8 flex items-center gap-6">
+        <div className="min-h-screen font-poppins text-white bg-[url('/src/assets/fundolaranja.jpg')] bg-cover bg-center bg-no-repeat p-6">
+
+            {/* HEADER LOJA */}
+            <div className={`${cardClass} mb-6 flex items-center gap-6`}>
                 {loja.fachada ? (
                     <img
                         src={`http://localhost:5000/uploads/prints/${loja.fachada}`}
-                        alt={`Logo da loja ${loja.nome}`}
-                        className="w-24 h-24 object-contain rounded-2xl shadow-md"
+                        alt={loja.nome}
+                        className="w-20 h-20 object-cover rounded-xl"
                     />
                 ) : (
-                    <div className="w-24 h-24 bg-white/30 text-white/70 flex items-center justify-center rounded-2xl shadow-inner">
-                        Sem logo
+                    <div className="w-20 h-20 bg-white/10 rounded-xl flex items-center justify-center">
+                        {loja.nome?.charAt(0)}
                     </div>
                 )}
+
                 <div>
-                    <h1 className="text-3xl font-extrabold uppercase text-[#5B1B29] drop-shadow">{loja.nome}</h1>
-                    <p className="text-white/90"><strong>CNPJ/CPF:</strong> {loja.cnpj_cpf}</p>
-                    <p className="text-white/90"><strong>E-mail:</strong> {loja.email}</p>
+                    <h1 className="text-xl font-semibold">{loja.nome}</h1>
+                    <p className="text-sm text-white/60">{loja.email}</p>
+                    <p className="text-sm text-white/60">{loja.cnpj_cpf}</p>
                 </div>
             </div>
 
-            <div className="bg-white/20 backdrop-blur-md p-6 rounded-3xl shadow-lg mb-8">
-                <h2 className="text-2xl font-bold uppercase text-[#5B1B29] mb-2">Endereço</h2>
-                <p className="text-white/90">
+            {/* ENDEREÇO */}
+            <div className={`${cardClass} mb-6`}>
+                <h2 className="text-lg font-semibold mb-2">Endereço</h2>
+                <p className="text-sm text-white/70">
                     {loja.endereco?.rua}, {loja.endereco?.numero}
-                    {loja.endereco?.complemento ? `, ${loja.endereco.complemento}` : ""} <br />
-                    {loja.endereco?.bairro} - {loja.endereco?.cidade} / {loja.endereco?.estado} <br />
-                    CEP: {loja.endereco?.cep || "Não informado"}
+                    {loja.endereco?.complemento && `, ${loja.endereco.complemento}`} <br />
+                    {loja.endereco?.bairro} - {loja.endereco?.cidade} / {loja.endereco?.estado}
                 </p>
             </div>
 
-            <div className="bg-white/20 backdrop-blur-md p-6 rounded-3xl shadow-lg mb-8 border border-white/30">
-                <h2 className="text-2xl font-bold uppercase text-[#5B1B29] mb-2">Programa de Fidelidade</h2>
-                <p className="text-white/90 mb-3">
-                    Participe do programa de fidelidade desta loja e ganhe descontos, brindes e vantagens exclusivas!
+            {/* FIDELIDADE */}
+            <div className={`${cardClass} mb-6 border border-clientPrimary/30`}>
+                <h2 className="text-lg font-semibold mb-2">Programa de fidelidade</h2>
+                <p className="text-sm text-white/60 mb-4">
+                    Participe e desbloqueie recompensas exclusivas
                 </p>
+
                 <button
                     onClick={irParaProgramaFidelidade}
-                    className="bg-brandGreen hover:bg-green-600 text-white font-semibold px-6 py-2 rounded-full uppercase tracking-wide transition shadow-lg focus:outline-none focus:ring-4 focus:ring-[#5B1B29]"
+                    className={buttonPrimary}
                 >
-                    Quero Participar 🎉
+                    Participar
                 </button>
             </div>
 
-            <div className="bg-white/20 backdrop-blur-md p-6 rounded-3xl shadow-lg border border-white/30">
-                <h2 className="text-2xl font-bold uppercase text-[#5B1B29] mb-4">Tarefas</h2>
+            {/* TAREFAS */}
+            <div className={cardClass}>
+                <h2 className="text-lg font-semibold mb-4">Tarefas</h2>
 
-                {erro && <p className="mb-4 text-red-300 font-semibold">{erro}</p>}
+                {erro && (
+                    <div className="bg-red-500/20 border border-red-500/30 p-3 rounded-xl text-sm mb-4">
+                        {erro}
+                    </div>
+                )}
+
                 {uploadStatus && (
-                    <div className="animate-pulse bg-green-500/80 text-white text-center font-bold text-lg py-3 rounded-2xl mb-6 shadow-lg ring-4 ring-white/30">
+                    <div className="bg-green-500/20 border border-green-500/30 p-3 rounded-xl text-sm mb-4">
                         {uploadStatus}
                     </div>
                 )}
 
-                <ul className="space-y-6">
+                <div className="space-y-4">
                     {tarefas.map((tarefa) => (
-                        <li key={tarefa._id} className="bg-white/10 backdrop-blur p-4 rounded-2xl border border-white/20 shadow">
-                            <p className="font-bold text-lg text-white mb-2 uppercase">{tarefa.titulo || "Tarefa"}</p>
+                        <div
+                            key={tarefa._id}
+                            className="bg-black/30 p-4 rounded-xl border border-white/10"
+                        >
+                            <p className="font-medium">{tarefa.titulo || "Tarefa"}</p>
+
                             {!tarefasAbertas[tarefa._id] ? (
                                 <button
                                     onClick={() => toggleTarefa(tarefa._id)}
-                                    className="px-4 py-2 bg-brandGreen text-white font-semibold rounded-full uppercase tracking-wide hover:bg-green-600 transition focus:outline-none focus:ring-4 focus:ring-[#5B1B29]"
+                                    className={`${buttonSecondary} mt-3`}
                                 >
-                                    Realizar Tarefa
+                                    Abrir
                                 </button>
                             ) : (
-                                <>
-                                    <p className="text-white/90 mb-2"><strong>Descrição:</strong> {tarefa.descricao}</p>
+                                <div className="mt-3 space-y-3">
+                                    <p className="text-sm text-white/70">
+                                        {tarefa.descricao}
+                                    </p>
+
                                     <a
                                         href={tarefa.link}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-block mb-3 px-4 py-2 rounded-full bg-brandGreen text-white font-semibold uppercase tracking-wide hover:bg-green-600 transition focus:outline-none focus:ring-4 focus:ring-[#5B1B29]"
+                                        className="inline-block text-sm underline text-clientAccent"
                                     >
-                                        Acessar Tarefa
+                                        Acessar tarefa
                                     </a>
-                                    <p className="text-lg font-bold text-white mb-2">
-                                        🎯 Desconto:{" "}
-                                        <span className="text-3xl text-red-900 animate-pulse font-extrabold">
+
+                                    <p className="text-sm">
+                                        Desconto:{" "}
+                                        <span className="font-semibold">
                                             {tarefa.desconto}%
                                         </span>
                                     </p>
+
                                     {printsEnviados[tarefa._id] ? (
-                                        <div className="animate-pulse bg-green-600/90 text-white text-center font-semibold py-2 rounded-xl mt-2 shadow ring-2 ring-white/40">
-                                            ✅ Comprovante enviado!
+                                        <div className="text-green-400 text-sm">
+                                            Comprovante enviado
                                         </div>
                                     ) : (
                                         <>
@@ -156,22 +195,28 @@ export default function LojaDetalhes() {
                                                 id={`file-${tarefa._id}`}
                                                 type="file"
                                                 accept="image/*"
-                                                onChange={(e) => enviarPrint(tarefa._id, e.target.files[0])}
+                                                onChange={(e) =>
+                                                    enviarPrint(
+                                                        tarefa._id,
+                                                        e.target.files[0]
+                                                    )
+                                                }
                                                 className="hidden"
                                             />
+
                                             <label
                                                 htmlFor={`file-${tarefa._id}`}
-                                                className="inline-block mt-2 px-4 py-2 rounded-full bg-brandGreen text-white font-semibold uppercase tracking-wide cursor-pointer hover:bg-green-600 transition focus:outline-none focus:ring-4 focus:ring-[#5B1B29]"
+                                                className={buttonSecondary}
                                             >
-                                                Enviar Comprovante
+                                                Enviar comprovante
                                             </label>
                                         </>
                                     )}
-                                </>
+                                </div>
                             )}
-                        </li>
+                        </div>
                     ))}
-                </ul>
+                </div>
             </div>
         </div>
     );

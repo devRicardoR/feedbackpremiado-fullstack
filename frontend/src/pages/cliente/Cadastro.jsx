@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api, { setToken } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import bgCliente from '../../assets/fundolaranja.jpg';
 
 export default function ClienteCadastro({ isEdit = false }) {
     const [nome, setNome] = useState('');
@@ -17,32 +18,32 @@ export default function ClienteCadastro({ isEdit = false }) {
                     navigate('/cliente/login');
                     return;
                 }
+
                 setToken(token);
                 const response = await api.get('/clientes/me');
                 const { nome, email } = response.data;
+
                 setNome(nome);
                 setEmail(email);
             } catch (error) {
-                console.error('Erro ao carregar dados do perfil:', error);
+                console.error(error);
                 setErro('Erro ao carregar dados do perfil');
             }
         }
 
-        if (isEdit) {
-            carregarDados();
-        }
+        if (isEdit) carregarDados();
     }, [isEdit, navigate]);
 
     async function handleSubmit(e) {
         e.preventDefault();
+        setErro('');
+
         try {
             if (isEdit) {
                 await api.put('/clientes/editar', { nome, email, senha });
-                alert('Perfil atualizado com sucesso!');
                 navigate('/cliente/painel');
             } else {
                 await api.post('/clientes/cadastro', { nome, email, senha });
-                alert('Cadastro realizado com sucesso! Faça login.');
                 navigate('/');
             }
         } catch (error) {
@@ -50,48 +51,75 @@ export default function ClienteCadastro({ isEdit = false }) {
         }
     }
 
+    const cardClass =
+        'w-full max-w-md bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-neonClient';
+
+    const inputClass =
+        'w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white placeholder-white/60 outline-none focus:border-clientPrimary';
+
     return (
-        <div className="min-h-screen font-poppins bg-gradient-to-br from-brandRed via-brandOrange to-brandYellow flex items-center justify-center p-6">
-            <main className="w-full max-w-md bg-white/20 backdrop-blur-md rounded-3xl shadow-lg border border-white/30 p-8">
-                <h1 className="text-3xl font-extrabold mb-8 text-red-900 text-center uppercase tracking-wide drop-shadow-lg">
-                    {isEdit ? 'Editar Perfil' : 'Cadastro Cliente'}
-                </h1>
-                {erro && (
-                    <p className="mb-6 text-red-500 font-semibold text-center text-lg">{erro}</p>
-                )}
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <input
-                        type="text"
-                        placeholder="Nome completo"
-                        value={nome}
-                        onChange={e => setNome(e.target.value)}
-                        required
-                        className="w-full px-5 py-3 rounded-2xl bg-white/30 placeholder-white/70 text-white font-semibold outline-none backdrop-blur-md focus:ring-4 focus:ring-white transition"
-                    />
-                    <input
-                        type="email"
-                        placeholder="E-mail"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        required
-                        className="w-full px-5 py-3 rounded-2xl bg-white/30 placeholder-white/70 text-white font-semibold outline-none backdrop-blur-md focus:ring-4 focus:ring-white transition"
-                    />
-                    <input
-                        type="password"
-                        placeholder={isEdit ? 'Nova senha (deixe vazio para manter)' : 'Senha'}
-                        value={senha}
-                        onChange={e => setSenha(e.target.value)}
-                        className="w-full px-5 py-3 rounded-2xl bg-white/30 placeholder-white/70 text-white font-semibold outline-none backdrop-blur-md focus:ring-4 focus:ring-white transition"
-                        {...(!isEdit && { required: true })}
-                    />
-                    <button
-                        type="submit"
-                        className="w-full bg-brandGreen hover:bg-green-600 text-white py-3 rounded-2xl font-extrabold uppercase tracking-wide shadow-lg transition focus:ring-4 focus:ring-[#5B1B29]"
-                    >
-                        {isEdit ? 'Salvar Alterações' : 'Cadastrar'}
-                    </button>
-                </form>
-            </main>
+        <div
+            className="min-h-screen font-poppins flex items-center justify-center text-white"
+            style={{
+                backgroundImage: `url(${bgCliente})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+            }}
+        >
+            {/* overlay */}
+            <div className="w-full min-h-screen bg-black/40 flex items-center justify-center p-6">
+                <div className={cardClass}>
+                    <h1 className="text-2xl font-semibold mb-6 text-center">
+                        {isEdit ? 'Editar perfil' : 'Cadastro'}
+                    </h1>
+
+                    {erro && (
+                        <div className="bg-red-500/20 border border-red-500/30 p-3 rounded-xl text-sm mb-4">
+                            {erro}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <input
+                            type="text"
+                            placeholder="Nome completo"
+                            value={nome}
+                            onChange={(e) => setNome(e.target.value)}
+                            required
+                            className={inputClass}
+                        />
+
+                        <input
+                            type="email"
+                            placeholder="E-mail"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            className={inputClass}
+                        />
+
+                        <input
+                            type="password"
+                            placeholder={
+                                isEdit
+                                    ? 'Nova senha (opcional)'
+                                    : 'Senha'
+                            }
+                            value={senha}
+                            onChange={(e) => setSenha(e.target.value)}
+                            className={inputClass}
+                            {...(!isEdit && { required: true })}
+                        />
+
+                        <button
+                            type="submit"
+                            className="w-full bg-clientPrimary hover:bg-clientSecondary py-3 rounded-xl font-semibold transition"
+                        >
+                            {isEdit ? 'Salvar alterações' : 'Cadastrar'}
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     );
 }

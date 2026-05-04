@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api, { setToken } from '../../services/api';
+import bgCliente from '../../assets/fundolaranja.jpg';
 
 export default function ProgramaFidelizacao() {
     const { id_empresa } = useParams();
@@ -19,11 +20,10 @@ export default function ProgramaFidelizacao() {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
-            setErro('Você precisa estar logado para acessar.');
-            setLoading(false);
             navigate('/cliente/login');
             return;
         }
+
         setToken(token);
 
         async function carregarPrograma() {
@@ -37,20 +37,14 @@ export default function ProgramaFidelizacao() {
                 setMeta(data.meta);
                 setCarimbos(data.carimbos);
                 setParticipando(true);
-                setMensagem('');
-                setErro('');
             } catch (error) {
                 if (error.response?.status === 401) {
-                    setErro('Sessão expirada. Faça login novamente.');
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('tipo');
+                    localStorage.clear();
                     navigate('/cliente/login');
                 } else if (error.response?.status === 404) {
                     setParticipando(false);
-                    setMensagem('');
-                    setErro('');
                 } else {
-                    setErro('Erro ao carregar programa de fidelidade.');
+                    setErro('Erro ao carregar programa.');
                 }
             } finally {
                 setLoading(false);
@@ -71,31 +65,28 @@ export default function ProgramaFidelizacao() {
             setMensagem('Cadastro realizado com sucesso!');
         } catch (error) {
             if (error.response?.status === 400) {
-                setMensagem('Você já está participando do programa!');
+                setMensagem('Você já está participando.');
             } else {
-                setErro('Erro ao participar do programa.');
+                setErro('Erro ao participar.');
             }
         }
     }
 
     const renderCarimbos = (carimbos, meta) => {
         return (
-            <div className="grid grid-cols-5 gap-5 mt-4">
+            <div className="grid grid-cols-5 gap-4 mt-6">
                 {Array.from({ length: meta }).map((_, index) => (
                     <div
                         key={index}
-                        className={`w-20 h-20 rounded-xl flex items-center justify-center transition
+                        className={`w-16 h-16 rounded-xl flex items-center justify-center transition
                         ${
                             index < carimbos
-                                ? 'bg-white/80 text-black shadow-xl'
+                                ? 'bg-white text-black shadow-lg'
                                 : 'bg-white/20 text-white/30 border border-white/30'
                         }`}
                     >
                         {index < carimbos && (
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="black" strokeWidth="2" fill="none" />
-                                <path d="M7 12l3 3 7-7" stroke="black" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
+                            <div className="w-6 h-6 rounded-full bg-clientPrimary"></div>
                         )}
                     </div>
                 ))}
@@ -104,62 +95,68 @@ export default function ProgramaFidelizacao() {
     };
 
     if (loading)
-        return <div className="text-white p-6 text-xl">Carregando programa de fidelidade...</div>;
+        return <div className="text-white p-6">Carregando...</div>;
 
     if (erro)
-        return <div className="text-red-300 p-6 font-semibold text-xl">{erro}</div>;
-
-    if (!programa && !participando)
-        return <div className="text-white p-6 text-xl">Nenhum programa de fidelidade encontrado.</div>;
+        return <div className="text-red-300 p-6">{erro}</div>;
 
     return (
-        <div className="min-h-screen font-poppins bg-gradient-to-br from-brandRed via-brandOrange to-brandYellow text-white p-6 flex justify-center items-start">
-            <div className="w-full max-w-3xl bg-white/20 backdrop-blur-md rounded-3xl shadow-lg border border-white/30 p-10">
-                <div className="text-center mb-10">
-                    <h1 className="text-4xl font-extrabold uppercase text-[#5B1B29] drop-shadow">🎉 Programa de Fidelidade</h1>
-                    <p className="text-white/90 mt-4 text-2xl">Ganhe carimbos e desbloqueie recompensas exclusivas!</p>
+        <div
+            className="min-h-screen font-poppins bg-cover bg-center bg-no-repeat text-white p-6 flex justify-center"
+            style={{ backgroundImage: `url(${bgCliente})` }}
+        >
+            {/* overlay pra não ficar estourado */}
+            <div className="w-full flex justify-center bg-black/40 backdrop-blur-sm min-h-screen p-6">
+                <div className="w-full max-w-3xl bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-8 shadow-neonClient">
+
+                    <div className="text-center mb-8">
+                        <h1 className="text-3xl font-bold">Programa de Fidelidade</h1>
+                        <p className="text-white/80 mt-2">
+                            Ganhe recompensas acumulando carimbos
+                        </p>
+                    </div>
+
+                    {programa && (
+                        <>
+                            <div className="mb-6">
+                                <p className="font-semibold text-white/80 mb-1">Regras</p>
+                                <p className="text-white">{regras}</p>
+                            </div>
+
+                            <div className="mb-6">
+                                <p className="font-semibold text-white/80 mb-1">Benefícios</p>
+                                <p className="text-white">{beneficios}</p>
+                            </div>
+
+                            <div className="mb-6">
+                                <p className="font-semibold text-white/80 mb-1">Meta</p>
+                                <p className="text-white">{meta} carimbos</p>
+                            </div>
+
+                            <div className="mb-8">
+                                <p className="font-semibold text-white/80 mb-2">Seu progresso</p>
+                                {renderCarimbos(carimbos, meta)}
+                            </div>
+                        </>
+                    )}
+
+                    {!participando && (
+                        <div className="text-center">
+                            <button
+                                onClick={participarPrograma}
+                                className="bg-white text-orange-600 font-semibold px-6 py-3 rounded-full hover:scale-105 transition"
+                            >
+                                Participar
+                            </button>
+                        </div>
+                    )}
+
+                    {mensagem && (
+                        <div className="mt-6 text-center bg-green-500/80 py-3 rounded-xl font-semibold">
+                            {mensagem}
+                        </div>
+                    )}
                 </div>
-
-                {programa && (
-                    <>
-                        <div className="mb-6">
-                            <p className="text-2xl font-bold uppercase text-[#5B1B29] mb-2">📜 Regras:</p>
-                            <p className="text-white/90 text-lg">{regras}</p>
-                        </div>
-
-                        <div className="mb-6">
-                            <p className="text-2xl font-bold uppercase text-[#5B1B29] mb-2">🎁 Benefícios:</p>
-                            <p className="text-white/90 text-lg">{beneficios}</p>
-                        </div>
-
-                        <div className="mb-6">
-                            <p className="text-2xl font-bold uppercase text-[#5B1B29] mb-2">🎯 Meta de Carimbos:</p>
-                            <p className="text-white/90 text-lg">{meta}</p>
-                        </div>
-
-                        <div className="mb-8">
-                            <p className="text-2xl font-bold uppercase text-[#5B1B29] mb-2">🔘 Seus Carimbos:</p>
-                            {renderCarimbos(carimbos, meta)}
-                        </div>
-                    </>
-                )}
-
-                {!participando && (
-                    <div className="text-center">
-                        <button
-                            onClick={participarPrograma}
-                            className="bg-brandGreen hover:bg-green-600 text-white text-lg font-semibold px-8 py-3 rounded-full uppercase tracking-wide transition focus:outline-none focus:ring-4 focus:ring-[#5B1B29]"
-                        >
-                            Participar do Programa
-                        </button>
-                    </div>
-                )}
-
-                {mensagem && (
-                    <div className="mt-8 text-center animate-pulse bg-green-500/90 text-white text-xl font-bold py-4 rounded-2xl shadow ring-2 ring-white/30">
-                        {mensagem}
-                    </div>
-                )}
             </div>
         </div>
     );

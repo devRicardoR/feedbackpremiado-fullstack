@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import BotaoLogout from '../../components/BotaoLogout';
 
 import {
     BarChart,
@@ -14,20 +13,58 @@ import {
     Tooltip,
     ResponsiveContainer,
     CartesianGrid,
-    } from 'recharts';
+} from 'recharts';
 
-    import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-    import markerIcon from 'leaflet/dist/images/marker-icon.png';
-    import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
-    delete L.Icon.Default.prototype._getIconUrl;
-    L.Icon.Default.mergeOptions({
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
     iconRetinaUrl: markerIcon2x,
     iconUrl: markerIcon,
     shadowUrl: markerShadow,
-    });
+});
 
-    export default function ClientePainel() {
+// ICONES
+function IconHome() {
+    return (
+        <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-4H9v4a2 2 0 0 1-2 2H3z" />
+        </svg>
+    );
+}
+
+function IconUser() {
+    return (
+        <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <circle cx="12" cy="7" r="4" />
+            <path d="M5.5 21a6.5 6.5 0 0 1 13 0" />
+        </svg>
+    );
+}
+
+function IconLogout() {
+    return (
+        <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1" />
+        </svg>
+    );
+}
+
+function IconGift() {
+    return (
+        <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7" />
+            <path d="M2 7h20v5H2z" />
+            <path d="M12 22V7" />
+        </svg>
+    );
+}
+
+export default function ClientePainel() {
+    const navigate = useNavigate();
+
     const [lojas, setLojas] = useState([]);
     const [ranking, setRanking] = useState([]);
     const [busca, setBusca] = useState('');
@@ -36,189 +73,132 @@ import {
 
     useEffect(() => {
         async function carregarDados() {
-        try {
-            const [resLojas, resRanking] = await Promise.all([
-            api.get('/empresas'),
-            api.get('/empresas/ranking'),
-            ]);
-            setLojas(resLojas.data);
-            setRanking(resRanking.data);
-        } catch (e) {
-            console.error('Erro ao carregar dados:', e);
-        }
+            try {
+                const [resLojas, resRanking] = await Promise.all([
+                    api.get('/empresas'),
+                    api.get('/empresas/ranking'),
+                ]);
+                setLojas(resLojas.data);
+                setRanking(resRanking.data);
+            } catch (e) {
+                console.error(e);
+            }
         }
 
         carregarDados();
 
         navigator.geolocation.getCurrentPosition(
-        (pos) => {
-            setLocalizacao([pos.coords.latitude, pos.coords.longitude]);
-        },
-        (err) => {
-            console.warn('Erro ao obter localização:', err);
-        }
+            (pos) => {
+                setLocalizacao([pos.coords.latitude, pos.coords.longitude]);
+            },
+            () => {}
         );
     }, []);
 
     const lojasFiltradas = lojas.filter(
         (loja) =>
-        loja.nome?.toLowerCase().includes(busca.toLowerCase()) &&
-        (filtroCidade === '' ||
-            loja.endereco?.cidade?.toLowerCase() === filtroCidade.toLowerCase())
+            loja.nome?.toLowerCase().includes(busca.toLowerCase()) &&
+            (filtroCidade === '' ||
+                loja.endereco?.cidade?.toLowerCase() === filtroCidade.toLowerCase())
     );
 
-    const maiorPontuacao = Math.max(...ranking.map((e) => e.totalPrints), 1);
-
     return (
-        <div className="min-h-screen font-poppins bg-gradient-to-br from-brandRed via-brandOrange to-brandYellow text-white">
-        <header className="p-5 flex justify-between items-center bg-white/20 backdrop-blur-md shadow-lg">
-            <h1 className="text-3xl font-extrabold tracking-wide drop-shadow-lg">
-            🔥 Feedback Premiado
-            </h1>
-            <BotaoLogout />
-        </header>
+        <div
+            className="min-h-screen font-poppins text-white bg-cover bg-center bg-no-repeat"
+            style={{
+                backgroundImage: "url('/src/assets/fundolaranja.jpg')",
+            }}
+        >
+            <div className="min-h-screen bg-black/50 backdrop-blur-[2px]">
 
-        <section className="p-6 max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row gap-6 mb-8">
-            <input
-                type="text"
-                placeholder="🔍 Buscar loja por nome"
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
-                className="flex-1 px-5 py-3 rounded-2xl bg-white/25 placeholder-white/80 text-white font-semibold backdrop-blur-md outline-none transition focus:ring-4 focus:ring-white"
-            />
-            <input
-                type="text"
-                placeholder="🏙️ Filtrar por cidade"
-                value={filtroCidade}
-                onChange={(e) => setFiltroCidade(e.target.value)}
-                className="flex-1 px-5 py-3 rounded-2xl bg-white/25 placeholder-white/80 text-white font-semibold backdrop-blur-md outline-none transition focus:ring-4 focus:ring-white"
-            />
-            </div>
+                {/* HEADER */}
+                <header className="p-5 text-center bg-black/40 backdrop-blur-xl border-b border-white/10">
+                    <h1 className="text-xl font-semibold">Painel do Cliente</h1>
+                </header>
 
-            {lojasFiltradas.length > 0 && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-brandOrange scrollbar-track-transparent">
-                {lojasFiltradas.map((loja) => (
-                <div
-                    key={loja._id}
-                    className="p-5 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 shadow-lg hover:scale-[1.03] transition-transform cursor-pointer"
-                >
-                    <Link
-                    to={`/cliente/loja/${loja._id}`}
-                    className="text-2xl font-bold text-white hover:underline"
-                    >
-                    {loja.nome}
-                    </Link>
-                    <p className="mt-1 text-white/90">
-                    {loja.endereco?.rua}, {loja.endereco?.numero} -{' '}
-                    {loja.endereco?.cidade || 'Cidade não informada'}
-                    </p>
-                    <Link
-                    to={`/cliente/fidelidade/${loja._id}`}
-                    className="inline-block mt-4 px-4 py-2 rounded-full bg-brandGreen font-semibold text-white shadow-lg hover:bg-green-600 transition"
-                    >
-                    Participar do programa fidelidade
-                    </Link>
+                {/* FILTROS */}
+                <section className="p-6 max-w-7xl mx-auto">
+                    <div className="flex flex-col md:flex-row gap-4 mb-8">
+                        <input
+                            type="text"
+                            placeholder="Buscar loja"
+                            value={busca}
+                            onChange={(e) => setBusca(e.target.value)}
+                            className="flex-1 px-5 py-3 rounded-xl bg-black/40 border border-white/10 text-white placeholder-white/60 backdrop-blur-md outline-none focus:border-clientPrimary"
+                        />
+
+                        <input
+                            type="text"
+                            placeholder="Filtrar por cidade"
+                            value={filtroCidade}
+                            onChange={(e) => setFiltroCidade(e.target.value)}
+                            className="flex-1 px-5 py-3 rounded-xl bg-black/40 border border-white/10 text-white placeholder-white/60 backdrop-blur-md outline-none focus:border-clientPrimary"
+                        />
+                    </div>
+
+                    {/* LOJAS */}
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+                        {lojasFiltradas.map((loja) => (
+                            <div
+                                key={loja._id}
+                                className="p-5 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 hover:border-clientPrimary transition"
+                            >
+                                <Link
+                                    to={`/cliente/loja/${loja._id}`}
+                                    className="text-lg font-semibold"
+                                >
+                                    {loja.nome}
+                                </Link>
+
+                                <p className="mt-2 text-sm text-white/70">
+                                    {loja.endereco?.cidade}
+                                </p>
+
+                                {/* AÇÃO COM ÍCONE */}
+                                <div className="flex justify-end mt-4">
+                                    <button
+                                        onClick={() => navigate(`/cliente/fidelidade/${loja._id}`)}
+                                        className="flex flex-col items-center text-gray-200 hover:text-clientAccent transition"
+                                    >
+                                        <IconGift />
+                                        <span className="text-xs">Fidelidade</span>
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* MAPA */}
+                <div className="h-[350px] max-w-7xl mx-auto mb-10 rounded-2xl overflow-hidden border border-white/10">
+                    <MapContainer center={localizacao} zoom={13} className="h-full w-full">
+                        <TileLayer
+                            attribution="&copy; OpenStreetMap contributors"
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                    </MapContainer>
                 </div>
-                ))}
+
+                {/* RANKING */}
+                <main className="max-w-6xl mx-auto px-4 pb-24">
+                    <h2 className="text-xl font-semibold mb-4 text-center">
+                        Ranking
+                    </h2>
+
+                    <div className="h-[350px] bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={ranking}>
+                                <CartesianGrid stroke="rgba(255 255 255 / 0.1)" />
+                                <XAxis dataKey="nome" tick={{ fill: 'white', fontSize: 12 }} />
+                                <YAxis tick={{ fill: 'white' }} />
+                                <Tooltip />
+                                <Bar dataKey="totalPrints" fill="#F97316" />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </main>
+
             </div>
-            )}
-        </section>
-
-        <div className="h-[400px] w-full max-w-7xl mx-auto mb-12 rounded-3xl overflow-hidden shadow-lg border-4 border-white/40">
-            <MapContainer
-            center={localizacao}
-            zoom={13}
-            scrollWheelZoom={true}
-            className="h-full w-full"
-            >
-            <TileLayer
-                attribution="&copy; OpenStreetMap contributors"
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            {lojasFiltradas.map(
-                (loja) =>
-                loja.endereco?.localizacao?.coordinates && (
-                    <Marker
-                    key={loja._id}
-                    position={[
-                        loja.endereco.localizacao.coordinates[1],
-                        loja.endereco.localizacao.coordinates[0],
-                    ]}
-                    >
-                    <Popup className="text-black">
-                        <strong>{loja.nome}</strong>
-                        <br />
-                        {loja.endereco?.rua}, {loja.endereco?.numero}
-                        <br />
-                        {loja.endereco?.cidade}
-                        <br />
-                        <Link
-                        to={`/cliente/loja/${loja._id}`}
-                        className="text-blue-700 underline hover:text-blue-900"
-                        >
-                        Ver detalhes
-                        </Link>
-                        <br />
-                        <Link
-                        to={`/cliente/fidelidade/${loja._id}`}
-                        className="text-green-700 underline hover:text-green-900 mt-1 block"
-                        >
-                        Participar do programa fidelidade
-                        </Link>
-                    </Popup>
-                    </Marker>
-                )
-            )}
-            </MapContainer>
-        </div>
-
-        <main className="max-w-6xl mx-auto px-4 pb-16">
-            <h2 className="text-4xl font-extrabold mb-8 drop-shadow-md text-white text-center">
-            Ranking de empresas mais avaliadas
-            </h2>
-
-            <div className="w-full h-[500px]">
-            <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                data={ranking}
-                margin={{ top: 20, right: 30, left: 30, bottom: 80 }}
-                barCategoryGap="20%"
-                >
-                <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="rgba(255 255 255 / 0.2)"
-                />
-                <XAxis
-                    dataKey="nome"
-                    interval={0}
-                    angle={-25}
-                    textAnchor="end"
-                    height={100}
-                    tick={{ fill: 'white', fontWeight: '600', fontSize: 12 }}
-                />
-                <YAxis
-                    tick={{ fill: 'white', fontWeight: '600' }}
-                    domain={[0, Math.ceil(maiorPontuacao * 1.1)]}
-                />
-                <Tooltip
-                    contentStyle={{
-                    backgroundColor: '#1f2937',
-                    borderRadius: '8px',
-                    border: 'none',
-                    }}
-                    itemStyle={{ color: '#F87171', fontWeight: '600' }}
-                />
-                <Bar
-                    dataKey="totalPrints"
-                    fill="#7B1A1A"
-                    radius={[10, 10, 0, 0]}
-                    maxBarSize={60}
-                />
-                </BarChart>
-            </ResponsiveContainer>
-            </div>
-        </main>
         </div>
     );
 }

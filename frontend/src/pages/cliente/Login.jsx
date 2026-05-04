@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api, { setToken } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import bgCliente from '../../assets/fundolaranja.jpg';
 
 export default function ClienteLogin() {
     const [email, setEmail] = useState('');
@@ -30,63 +31,75 @@ export default function ClienteLogin() {
     }
 
     return (
-        <div className="min-h-screen font-poppins bg-gradient-to-br from-brandRed via-brandOrange to-brandYellow flex flex-col">
-            <header className="bg-[#504b4d] p-4 text-center font-extrabold text-lg text-white shadow-lg">
-                Feedback Premiado
-            </header>
+        <div
+            className="min-h-screen font-poppins flex items-center justify-center p-6 bg-cover bg-center"
+            style={{ backgroundImage: `url(${bgCliente})` }}
+        >
+            <div className="min-h-screen w-full flex items-center justify-center bg-black/60">
 
-            <main className="flex-1 flex items-center justify-center p-6">
-                <div className="max-w-md w-full bg-white/20 backdrop-blur-md rounded-3xl border border-white/30 shadow-lg p-8">
-                    <h1 className="text-3xl font-extrabold mb-8 text-white text-center uppercase tracking-wide drop-shadow-lg">
+                <div className="max-w-md w-full bg-black/40 backdrop-blur-xl rounded-3xl border border-orange-300/30 shadow-neonClient p-8">
+
+                    <h1 className="text-3xl font-extrabold mb-8 text-white text-center uppercase tracking-wide">
                         Login Cliente
                     </h1>
 
                     {erro && (
-                        <p className="mb-6 text-red-500 font-semibold text-center text-lg">{erro}</p>
+                        <p className="mb-6 text-red-400 font-semibold text-center">
+                            {erro}
+                        </p>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
+
                         <input
                             type="email"
                             placeholder="E-mail"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             required
-                            className="w-full px-5 py-3 rounded-2xl bg-white/30 placeholder-white/70 text-red-900 font-semibold outline-none backdrop-blur-md focus:ring-4 focus:ring-white transition"
+                            className="w-full px-5 py-3 rounded-2xl bg-white/20 placeholder-white/70 text-white outline-none focus:ring-2 focus:ring-clientAccent"
                         />
+
                         <input
                             type="password"
                             placeholder="Senha"
                             value={senha}
                             onChange={e => setSenha(e.target.value)}
                             required
-                            className="w-full px-5 py-3 rounded-2xl bg-white/30 placeholder-white/70 text-red-900 font-semibold outline-none backdrop-blur-md focus:ring-4 focus:ring-white transition"
+                            className="w-full px-5 py-3 rounded-2xl bg-white/20 placeholder-white/70 text-white outline-none focus:ring-2 focus:ring-clientAccent"
                         />
+
                         <button
                             type="submit"
-                            className="w-full bg-brandGreen hover:bg-green-600 text-white py-3 rounded-2xl font-extrabold uppercase tracking-wide shadow-lg transition focus:ring-4 focus:ring-[#5B1B29]"
+                            className="w-full bg-clientPrimary hover:bg-clientSecondary text-white py-3 rounded-2xl font-bold tracking-wide shadow-neonClient transition"
                         >
                             Entrar
                         </button>
+
                     </form>
 
-                    <p className="mt-6 text-center text-white/80 text-lg">
+                    <p className="mt-6 text-center text-white/80">
                         Não tem conta?{' '}
-                        <a href="/cliente/cadastro" className="text-red-900">
+                        <span
+                            onClick={() => navigate('/cliente/cadastro')}
+                            className="text-white font-semibold cursor-pointer hover:underline"
+                        >
                             Cadastre-se
-                        </a>
+                        </span>
                     </p>
 
                     <div className="mt-8 text-center">
                         <button
                             onClick={handleVoltar}
-                            className="bg-white/20 hover:bg-white/30 text-white py-3 px-6 rounded-2xl font-semibold transition focus:ring-4 focus:ring-white"
+                            className="bg-white/10 hover:bg-white/20 text-white py-2 px-6 rounded-xl font-medium transition"
                         >
-                            Voltar para a página inicial
+                            Voltar
                         </button>
                     </div>
+
                 </div>
-            </main>
+
+            </div>
         </div>
     );
 }

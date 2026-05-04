@@ -7,18 +7,37 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#6366F1',      // Índigo vibrante — ações principais
-        secondary: '#8B5CF6',    // Roxo médio — destaques
-        accent: '#A78BFA',       // Roxo claro — hover, badges
-        danger: '#EF4444',       // Vermelho — erros, alertas
-        success: '#10B981',      // Verde — confirmações, descontos
-        surface: '#F5F3FF',      // Fundo levíssimo lilás
-        muted: '#6B7280',        // Cinza — textos secundários
+        // EMPRESA
+        primary: '#8B5CF6',
+        secondary: '#A855F7',
+        accent: '#C084FC',
+
+        // CLIENTE
+        clientPrimary: '#F97316',
+        clientSecondary: '#FB923C',
+        clientAccent: '#FDBA74',
+
+        // ESTADOS
+        danger: '#EF4444',
+        success: '#10B981',
+
+        // BASE DARK
+        surface: '#050505',
+        surfaceLight: '#111111',
+        card: 'rgba(255,255,255,0.05)',
+
+        muted: '#A1A1AA',
       },
+
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
       },
+
+      boxShadow: {
+        neon: '0 0 15px rgba(168,85,247,0.35)',
+        neonClient: '0 0 15px rgba(249,115,22,0.35)',
+      }
     },
   },
   plugins: [],

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api, { setToken } from "../../services/api";
+import fundo from "../../assets/fundo.jpg";
 
 export default function ProgramaFidelizacaoPainel() {
     const [empresa, setEmpresa] = useState(null);
@@ -46,7 +47,7 @@ export default function ProgramaFidelizacaoPainel() {
             setBeneficios(response.data.beneficios || "");
             setMeta(response.data.meta || 10);
 
-            if (response.data.clientes && response.data.clientes.length > 0) {
+            if (response.data.clientes?.length > 0) {
                 const clientesComDados = await Promise.all(
                     response.data.clientes.map(async (cliente) => {
                         if (cliente.id_cliente) {
@@ -78,8 +79,6 @@ export default function ProgramaFidelizacaoPainel() {
                 setBeneficios("");
                 setMeta(10);
                 setClientes([]);
-                setErro("");
-                setMensagem("");
             } else {
                 setErro("Erro ao carregar programa");
             }
@@ -89,10 +88,6 @@ export default function ProgramaFidelizacaoPainel() {
     async function criarPrograma() {
         setErro("");
         setMensagem("");
-        if (!empresa?._id) {
-            setErro("Empresa não carregada");
-            return;
-        }
         try {
             const response = await api.post("/fidelidade", {
                 regras,
@@ -102,8 +97,7 @@ export default function ProgramaFidelizacaoPainel() {
             setMensagem("Programa criado com sucesso!");
             setPrograma(response.data);
             await carregarPrograma(empresa._id);
-        } catch (err) {
-            console.error(err);
+        } catch {
             setErro("Erro ao criar programa");
         }
     }
@@ -111,10 +105,6 @@ export default function ProgramaFidelizacaoPainel() {
     async function atualizarPrograma() {
         setErro("");
         setMensagem("");
-        if (!empresa?._id) {
-            setErro("Empresa não carregada");
-            return;
-        }
         try {
             const response = await api.put("/fidelidade", {
                 regras,
@@ -123,8 +113,7 @@ export default function ProgramaFidelizacaoPainel() {
             });
             setMensagem("Programa atualizado com sucesso!");
             setPrograma(response.data);
-        } catch (err) {
-            console.error(err);
+        } catch {
             setErro("Erro ao atualizar programa");
         }
     }
@@ -132,10 +121,6 @@ export default function ProgramaFidelizacaoPainel() {
     async function darCarimbo(id_cliente) {
         setErro("");
         setMensagem("");
-        if (!empresa?._id) {
-            setErro("Empresa não carregada");
-            return;
-        }
         try {
             await api.post("/fidelidade/carimbar", {
                 id_empresa: empresa._id,
@@ -143,28 +128,26 @@ export default function ProgramaFidelizacaoPainel() {
             });
             setMensagem("Carimbo adicionado!");
             await carregarPrograma(empresa._id);
-        } catch (err) {
-            console.error(err);
+        } catch {
             setErro("Erro ao adicionar carimbo");
         }
     }
 
     const renderCarimbos = (carimbosRecebidos) => {
-        const total = meta;
         return (
             <div className="grid grid-cols-5 gap-2 mt-2">
-                {Array.from({ length: total }).map((_, index) => (
+                {Array.from({ length: meta }).map((_, index) => (
                     <div
                         key={index}
-                        className="w-12 h-12 rounded-xl flex items-center justify-center border-2 bg-white/10"
+                        className="w-12 h-12 rounded-xl flex items-center justify-center border border-white/10 bg-white/5"
                     >
-                        {index < carimbosRecebidos ? (
+                        {index < carimbosRecebidos && (
                             <img
                                 src="/dar-carimbo.png"
                                 alt="Carimbo"
-                                className="w-10 h-10 object-contain"
+                                className="w-8 h-8"
                             />
-                        ) : null}
+                        )}
                     </div>
                 ))}
             </div>
@@ -173,10 +156,12 @@ export default function ProgramaFidelizacaoPainel() {
 
     if (erro) {
         return (
-            <div className="min-h-screen font-poppins bg-gradient-to-br from-brandRed via-brandOrange to-brandYellow flex items-center justify-center text-white">
-                <div className="bg-white/20 backdrop-blur-md p-6 rounded-3xl shadow-lg max-w-xl text-center">
-                    <h1 className="text-3xl font-bold mb-4 text-[#800020]">🚫 Erro</h1>
-                    <p className="text-lg">{erro}</p>
+            <div
+                className="min-h-screen bg-cover bg-center flex items-center justify-center"
+                style={{ backgroundImage: `url(${fundo})` }}
+            >
+                <div className="bg-black/80 p-6 rounded-2xl text-white">
+                    {erro}
                 </div>
             </div>
         );
@@ -184,125 +169,112 @@ export default function ProgramaFidelizacaoPainel() {
 
     if (!empresa) {
         return (
-            <div className="min-h-screen font-poppins bg-gradient-to-br from-brandRed via-brandOrange to-brandYellow flex items-center justify-center text-white text-xl">
-                Carregando dados da empresa...
+            <div
+                className="min-h-screen bg-cover bg-center flex items-center justify-center text-white"
+                style={{ backgroundImage: `url(${fundo})` }}
+            >
+                Carregando...
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen font-poppins bg-gradient-to-br from-brandRed via-brandOrange to-brandYellow text-white p-6">
-            <div className="max-w-3xl mx-auto bg-white/20 backdrop-blur-md p-8 rounded-3xl shadow-xl">
-                <h1 className="text-4xl font-extrabold text-center mb-6 drop-shadow-lg text-[#800020]">🎯 Painel de Fidelidade</h1>
+        <div
+            className="min-h-screen bg-cover bg-center p-6"
+            style={{ backgroundImage: `url(${fundo})` }}
+        >
+            <div className="max-w-3xl mx-auto bg-black/70 backdrop-blur-xl p-8 rounded-3xl border border-white/10 text-white">
 
-                <p className="mb-6 text-white/90 text-lg text-center">
-                    Crie ou edite seu programa de fidelidade com metas, regras e benefícios. Veja os clientes participantes e gerencie carimbos.
-                </p>
+                <h1 className="text-2xl font-bold text-center mb-6">
+                    Painel de Fidelidade
+                </h1>
 
-                {mensagem && <p className="text-green-300 mb-4 text-center font-semibold">{mensagem}</p>}
+                {mensagem && (
+                    <p className="text-green-400 text-center mb-4">
+                        {mensagem}
+                    </p>
+                )}
 
-                {!programa ? (
-                    <div>
-                        <h2 className="text-2xl font-bold mb-4 text-[#800020]">🆕 Criar Programa de Fidelidade</h2>
+                <div className="space-y-4">
+                    <textarea
+                        value={regras}
+                        onChange={(e) => setRegras(e.target.value)}
+                        placeholder="Regras"
+                        className="w-full p-3 rounded-xl bg-white/5 border border-white/10"
+                    />
 
-                        <label className="block mb-2 font-semibold">📜 Regras</label>
-                        <textarea
-                            value={regras}
-                            onChange={(e) => setRegras(e.target.value)}
-                            className="w-full px-4 py-3 text-lg rounded-2xl bg-white/25 text-white placeholder-white/70 backdrop-blur-md mb-4 focus:ring-4 focus:ring-white outline-none"
-                            placeholder="Ex: A cada 10 compras, o cliente ganha um brinde"
-                        />
+                    <textarea
+                        value={beneficios}
+                        onChange={(e) => setBeneficios(e.target.value)}
+                        placeholder="Benefícios"
+                        className="w-full p-3 rounded-xl bg-white/5 border border-white/10"
+                    />
 
-                        <label className="block mb-2 font-semibold">🎁 Benefícios</label>
-                        <textarea
-                            value={beneficios}
-                            onChange={(e) => setBeneficios(e.target.value)}
-                            className="w-full px-4 py-3 text-lg rounded-2xl bg-white/25 text-white placeholder-white/70 backdrop-blur-md mb-4 focus:ring-4 focus:ring-white outline-none"
-                            placeholder="Ex: Brinde, desconto, etc."
-                        />
+                    <input
+                        type="number"
+                        value={meta}
+                        onChange={(e) => setMeta(Number(e.target.value))}
+                        className="w-full p-3 rounded-xl bg-white/5 border border-white/10"
+                    />
 
-                        <label className="block mb-2 font-semibold">🏁 Meta de Carimbos</label>
-                        <input
-                            type="number"
-                            value={meta}
-                            min={1}
-                            onChange={(e) => setMeta(Number(e.target.value))}
-                            className="w-full px-4 py-3 text-lg rounded-2xl bg-white/25 text-white placeholder-white/70 backdrop-blur-md mb-6 focus:ring-4 focus:ring-white outline-none"
-                        />
-
+                    {!programa ? (
                         <button
                             onClick={criarPrograma}
-                            className="w-full py-3 rounded-full bg-green-600 hover:bg-green-700 transition font-bold text-white shadow-lg"
+                            className="w-full bg-white text-black py-3 rounded-xl font-bold"
                         >
                             Criar Programa
                         </button>
-                    </div>
-                ) : (
-                    <>
-                        <h2 className="text-2xl font-bold mb-4 text-[#800020]">✏️ Editar Programa de Fidelidade</h2>
-
-                        <label className="block mb-2 font-semibold">📜 Regras</label>
-                        <textarea
-                            value={regras}
-                            onChange={(e) => setRegras(e.target.value)}
-                            className="w-full px-4 py-3 text-lg rounded-2xl bg-white/25 text-white placeholder-white/70 backdrop-blur-md mb-4 focus:ring-4 focus:ring-white outline-none"
-                        />
-
-                        <label className="block mb-2 font-semibold">🎁 Benefícios</label>
-                        <textarea
-                            value={beneficios}
-                            onChange={(e) => setBeneficios(e.target.value)}
-                            className="w-full px-4 py-3 text-lg rounded-2xl bg-white/25 text-white placeholder-white/70 backdrop-blur-md mb-4 focus:ring-4 focus:ring-white outline-none"
-                        />
-
-                        <label className="block mb-2 font-semibold">🏁 Meta de Carimbos</label>
-                        <input
-                            type="number"
-                            value={meta}
-                            min={1}
-                            onChange={(e) => setMeta(Number(e.target.value))}
-                            className="w-full px-4 py-3 text-lg rounded-2xl bg-white/25 text-white placeholder-white/70 backdrop-blur-md mb-6 focus:ring-4 focus:ring-white outline-none"
-                        />
-
+                    ) : (
                         <button
                             onClick={atualizarPrograma}
-                            className="w-full py-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition font-bold text-white shadow-lg mb-6"
+                            className="w-full bg-white text-black py-3 rounded-xl font-bold"
                         >
                             Atualizar Programa
                         </button>
+                    )}
+                </div>
 
-                        <h3 className="text-xl font-bold mb-4 text-[#800020]">👥 Clientes Participantes</h3>
+                {programa && (
+                    <div className="mt-8">
+                        <h2 className="text-lg font-semibold mb-4">
+                            Clientes
+                        </h2>
 
                         {clientes.length === 0 ? (
-                            <p className="text-white/80">Nenhum cliente participa ainda.</p>
+                            <p className="text-gray-400">
+                                Nenhum cliente ainda.
+                            </p>
                         ) : (
-                            <ul className="space-y-6 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-brandOrange scrollbar-track-transparent">
-                                {clientes.map((cliente) => (
-                                    <li
-                                        key={cliente.id_cliente || cliente._id}
-                                        className="bg-white/10 p-4 rounded-2xl backdrop-blur-md border border-white/30 shadow-lg"
+                            <div className="space-y-4">
+                                {clientes.map((c) => (
+                                    <div
+                                        key={c.id_cliente || c._id}
+                                        className="bg-white/5 p-4 rounded-xl border border-white/10"
                                     >
-                                        <p className="text-red-900 font-semibold text-lg">
-                                            {cliente.nome || "Cliente"}
+                                        <p className="font-semibold">
+                                            {c.nome}
                                         </p>
-                                        <p className="text-red-900 text-base">
-                                            Email: {cliente.email || "Não disponível"}
+                                        <p className="text-sm text-gray-400">
+                                            {c.email}
                                         </p>
-                                        <div className="mt-2">
-                                            <p className="font-semibold text-white mb-1">Carimbos:</p>
-                                            {renderCarimbos(cliente.carimbos)}
-                                        </div>
+
+                                        {renderCarimbos(c.carimbos)}
+
                                         <button
-                                            onClick={() => darCarimbo(cliente.id_cliente || cliente._id)}
-                                            className="mt-4 px-4 py-2 rounded-full bg-green-600 hover:bg-green-700 text-white font-bold shadow-md transition"
+                                            onClick={() =>
+                                                darCarimbo(
+                                                    c.id_cliente || c._id
+                                                )
+                                            }
+                                            className="mt-3 bg-white text-black px-4 py-2 rounded-lg text-sm"
                                         >
                                             Dar Carimbo
                                         </button>
-                                    </li>
+                                    </div>
                                 ))}
-                            </ul>
+                            </div>
                         )}
-                    </>
+                    </div>
                 )}
             </div>
         </div>

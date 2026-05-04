@@ -16,10 +16,12 @@ export default function EmpresaRanking() {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
+
         if (!token) {
             setErro("Usuário não autenticado");
             return;
         }
+
         setToken(token);
         carregarRanking();
     }, []);
@@ -34,82 +36,140 @@ export default function EmpresaRanking() {
         }
     }
 
-    const maiorPontuacao = Math.max(...ranking.map((e) => e.totalPrints), 1);
+    const maiorPontuacao = Math.max(
+        ...ranking.map((e) => e.totalPrints || 0),
+        1
+    );
+
+    const cardClass =
+        "bg-black/55 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-xl";
 
     return (
-        <div className="min-h-screen font-poppins bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white p-6">
-            <div className="max-w-4xl mx-auto">
+        <div className="min-h-screen text-white font-poppins p-4">
 
-                <div className="text-center mb-8">
-                    <h1 className="text-3xl font-extrabold text-white">Ranking de Empresas</h1>
-                    <p className="text-purple-300 text-sm mt-1">Empresas mais avaliadas pelos clientes</p>
+            <div className="max-w-4xl mx-auto space-y-6">
+
+                {/* HEADER */}
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold">
+                        Ranking de Empresas
+                    </h1>
+                    <p className="text-gray-400 text-sm">
+                        Empresas mais avaliadas pelos clientes
+                    </p>
                 </div>
 
+                {/* ERRO */}
                 {erro && (
-                    <div className="mb-6 bg-red-500/20 border border-red-400/40 rounded-xl px-4 py-3 text-red-300 text-sm text-center">
+                    <div className="bg-red-500/20 border border-red-500/30 p-3 rounded-xl text-red-300 text-sm text-center">
                         {erro}
                     </div>
                 )}
 
+                {/* VAZIO */}
                 {ranking.length === 0 && !erro ? (
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-12 text-center">
-                        <p className="text-purple-300">Nenhuma avaliação encontrada.</p>
+                    <div className={cardClass}>
+                        <p className="text-gray-400 text-center">
+                            Nenhuma avaliação encontrada.
+                        </p>
                     </div>
                 ) : (
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-lg">
-                        <div className="w-full h-[420px]">
+                    <div className={cardClass}>
+
+                        {/* GRÁFICO */}
+                        <div className="w-full h-[400px]">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart
                                     data={ranking}
-                                    margin={{ top: 20, right: 20, left: 10, bottom: 80 }}
-                                    barCategoryGap="20%"
+                                    margin={{
+                                        top: 20,
+                                        right: 20,
+                                        left: 0,
+                                        bottom: 80,
+                                    }}
                                 >
-                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                        stroke="rgba(255,255,255,0.08)"
+                                    />
+
                                     <XAxis
                                         dataKey="nome"
                                         interval={0}
                                         angle={-25}
                                         textAnchor="end"
                                         height={100}
-                                        tick={{ fill: "#c4b5fd", fontWeight: "600", fontSize: 12 }}
+                                        tick={{
+                                            fill: "#9CA3AF",
+                                            fontSize: 12,
+                                        }}
                                     />
+
                                     <YAxis
-                                        tick={{ fill: "#c4b5fd", fontWeight: "600", fontSize: 12 }}
-                                        domain={[0, Math.ceil(maiorPontuacao * 1.1)]}
+                                        tick={{
+                                            fill: "#9CA3AF",
+                                            fontSize: 12,
+                                        }}
+                                        domain={[
+                                            0,
+                                            Math.ceil(maiorPontuacao * 1.1),
+                                        ]}
                                     />
+
                                     <Tooltip
                                         contentStyle={{
-                                            backgroundColor: "#1e1b4b",
-                                            borderRadius: "12px",
-                                            border: "1px solid rgba(99,102,241,0.3)",
+                                            backgroundColor: "#0f172a",
+                                            borderRadius: "10px",
+                                            border: "1px solid rgba(255,255,255,0.1)",
                                         }}
-                                        itemStyle={{ color: "#a5b4fc", fontWeight: "600" }}
-                                        labelStyle={{ color: "white", fontWeight: "700" }}
+                                        itemStyle={{
+                                            color: "#6366f1",
+                                            fontWeight: "600",
+                                        }}
+                                        labelStyle={{
+                                            color: "#fff",
+                                            fontWeight: "700",
+                                        }}
                                     />
+
                                     <Bar
                                         dataKey="totalPrints"
                                         fill="#6366f1"
-                                        radius={[8, 8, 0, 0]}
-                                        maxBarSize={60}
+                                        radius={[6, 6, 0, 0]}
+                                        maxBarSize={50}
                                     />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
 
-                        {/* Lista de posições abaixo do gráfico */}
+                        {/* LISTA */}
                         <div className="mt-6 space-y-2">
                             {ranking.map((empresa, index) => (
-                                <div key={empresa._id || index} className="flex items-center gap-3 bg-white/5 rounded-xl px-4 py-2">
-                                    <span className={`text-sm font-bold w-6 text-center ${
-                                        index === 0 ? 'text-yellow-400' :
-                                        index === 1 ? 'text-gray-300' :
-                                        index === 2 ? 'text-amber-600' :
-                                        'text-purple-400'
-                                    }`}>
+                                <div
+                                    key={empresa._id || index}
+                                    className="flex items-center gap-3 bg-white/5 rounded-xl px-4 py-2"
+                                >
+                                    <span
+                                        className={`text-sm font-bold w-6 text-center ${
+                                            index === 0
+                                                ? "text-yellow-400"
+                                                : index === 1
+                                                ? "text-gray-300"
+                                                : index === 2
+                                                ? "text-amber-600"
+                                                : "text-gray-400"
+                                        }`}
+                                    >
                                         {index + 1}
                                     </span>
-                                    <span className="flex-1 text-white text-sm font-semibold">{empresa.nome}</span>
-                                    <span className="text-purple-300 text-sm">{empresa.totalPrints} avaliações</span>
+
+                                    <span className="flex-1 text-white text-sm font-semibold">
+                                        {empresa.nome}
+                                    </span>
+
+                                    <span className="text-gray-400 text-sm">
+                                        {empresa.totalPrints} avaliações
+                                    </span>
                                 </div>
                             ))}
                         </div>
