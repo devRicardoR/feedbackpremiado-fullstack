@@ -30,6 +30,11 @@ export default function ClienteLogin() {
         navigate('/');
     }
 
+    function handleCadastro(e) {
+        e.preventDefault();
+        navigate('/cliente/cadastro');
+    }
+
     return (
         <div
             className="min-h-screen font-poppins flex items-center justify-center p-6 bg-cover bg-center"
@@ -80,17 +85,19 @@ export default function ClienteLogin() {
 
                     <p className="mt-6 text-center text-white/80">
                         Não tem conta?{' '}
-                        <span
-                            onClick={() => navigate('/cliente/cadastro')}
-                            className="text-white font-semibold cursor-pointer hover:underline"
+                        <button
+                            onClick={handleCadastro}
+                            type="button"
+                            className="text-white font-semibold hover:underline"
                         >
                             Cadastre-se
-                        </span>
+                        </button>
                     </p>
 
                     <div className="mt-8 text-center">
                         <button
                             onClick={handleVoltar}
+                            type="button"
                             className="bg-white/10 hover:bg-white/20 text-white py-2 px-6 rounded-xl font-medium transition"
                         >
                             Voltar
